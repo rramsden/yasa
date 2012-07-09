@@ -1,9 +1,9 @@
 Yasa
 ====
 
-YASA is a high performance stat aggregation daemon which collects numeric time-series data based on given keys.
+Yasa is a high performance stat aggregation daemon which collects numeric time-series data based on given keys.
 Data is then aggregated and periodically dumped to individual Round Robin Databases depending on its key.
-Since YASA is able to load recently touched RRD archives into state its able to significantly reduce its I/O footprint
+Since Yasa is able to load recently touched RRD archives into state its able to significantly reduce its I/O footprint
 and quickly service requests without reading/writing to disk.
 Each RRD can be queried via Yasa's WebSocket or HTTP API allowing clients to steam/update data.
 

@@ -1,0 +1,11 @@
+{application,yasa,
+             [{description,[]},
+              {vsn,"1"},
+              {registered,[]},
+              {applications,[kernel,stdlib,cowboy]},
+              {mod,{yasa_app,[]}},
+              {env,[]},
+              {modules,[yasa,yasa_app,yasa_default_handler,yasa_handler_utils,
+                        yasa_http_api_handler,yasa_pid_store,yasa_rra,
+                        yasa_rra_file,yasa_rra_queue,yasa_rra_sup,yasa_sup,
+                        yasa_vm_stats,yasa_ws_api_handler]}]}.
