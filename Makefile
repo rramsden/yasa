@@ -1,6 +1,9 @@
 all: app
 
-app: get-deps
+app: compile
+	@./rebar generate	
+
+compile: get-deps
 	@./rebar compile
 
 get-deps:
@@ -8,7 +11,7 @@ get-deps:
 
 clean:
 	@./rebar clean
-	rm -f erl_crash.dump
+	@rm -f erl_crash.dump
 
 test: 
 	@./rebar eunit skip_deps=true
