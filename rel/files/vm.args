@@ -1,19 +1,24 @@
 ## Name of the node
--name yasa@127.0.0.1
+-name yasa
 
 ## Cookie for distributed erlang
 -setcookie yasa
 
-## Heartbeat management; auto-restarts VM if it dies or becomes unresponsive
+# Heartbeat management; auto-restarts VM if it dies or becomes unresponsive
 ## (Disabled by default..use with caution!)
 ##-heart
 
 ## Enable kernel poll and a few async threads
-##+K true
-##+A 5
++K true
++A 16 ## used for asynchronous drivers, file I/O, maybe other stuff
+
+## More processes, and treat error_logger warnings as warnings instead of
+## errors.
++W w
++P 20000000
 
 ## Increase number of concurrent ports/sockets
-##-env ERL_MAX_PORTS 4096
+-env ERL_MAX_PORTS 65535
 
 ## Tweak GC to run more often
-##-env ERL_FULLSWEEP_AFTER 10
+-env ERL_FULLSWEEP_AFTER 10
