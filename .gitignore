@@ -1,3 +1,5 @@
 *.yasa
 erl_crash.dump
 *.beam
+rel/yasa
+deps
