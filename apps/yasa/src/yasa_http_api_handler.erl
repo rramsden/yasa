@@ -19,10 +19,10 @@ http_handle(Req, State) ->
     ReplyHeader = [{'Content-Type', "application/json; charset=utf-8"}],
 
     {Method, _} = cowboy_http_req:binding(action, Req),
-    Key = yasa_handler_utils:pval(<<"key">>, Req),
-    Callback = yasa_handler_utils:pval(<<"callback">>, Req), % json-p callback
+    Key = yasa_handler_util:pval(<<"key">>, Req),
+    Callback = yasa_handler_util:pval(<<"callback">>, Req), % json-p callback
 
-    {Status, RawReply} = yasa_handler_utils:reply(Key, Method, Req),
+    {Status, RawReply} = yasa_handler_util:reply(Key, Method, Req),
     Reply = jsonp(Callback, to_json(RawReply)),
 
     {ok, Req2} = cowboy_http_req:reply(Status, ReplyHeader, Reply, Req),

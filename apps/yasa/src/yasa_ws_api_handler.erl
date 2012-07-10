@@ -22,14 +22,14 @@ stream(Data, Req, State = #state{registered = Registered}) ->
 		<<"unregister">> ->
     		{reply, <<"ok">>, Req, State#state{registered = lists:delete(Key, Registered)}};
     	<<"register">> ->
-    		{200, Values} = yasa_handler_utils:reply(Key, <<"get">>, Json),
+    		{200, Values} = yasa_handler_util:reply(Key, <<"get">>, Json),
     		Reply = [{init, true}, {key, Key}, {values, Values}],
     		{reply, jsx:to_json([Reply]), Req, State#state{registered = [Key | Registered]}};
     	<<"set">> -> 
-    		yasa_handler_utils:reply(Key, <<"set">>, Json),
+    		yasa_handler_util:reply(Key, <<"set">>, Json),
     		{reply, <<"ok">>, Req, State};
     	<<"incr">> -> 
-    		yasa_handler_utils:reply(Key, <<"incr">>, Json),
+    		yasa_handler_util:reply(Key, <<"incr">>, Json),
     		{reply, <<"ok">>, Req, State};
     	Type ->
     		{reply, <<"error: invalid request">>, Req, State}
@@ -38,7 +38,7 @@ stream(Data, Req, State = #state{registered = Registered}) ->
 info({timeout, _TRef, tick}, Req, State = #state{registered = Registered}) ->
 	erlang:start_timer(?TICKER, self(), tick),	
 	Mapper = fun(Key) ->
-		{200, Values} = yasa_handler_utils:reply(Key, <<"get">>, [{<<"range">>, <<"-10sec">>}]),
+		{200, Values} = yasa_handler_util:reply(Key, <<"get">>, [{<<"range">>, <<"-10sec">>}]),
 		[{key, Key}, {values, Values}]
 	end,
 	Data = lists:map(Mapper, Registered),
