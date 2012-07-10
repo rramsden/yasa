@@ -1,9 +1,9 @@
 %%%-------------------------------------------------------------------
 %%% @doc
-%%% Contains the interface for interacting with the YASA RRA files
+%%% Contains the interface for interacting with the YASA RRD files
 %%% @end
 %%%-------------------------------------------------------------------
--module(yasa_rra_file).
+-module(yasa_rrd_file).
 -export([load_from_file/1, save_to_file/2, get_keys/0]).
 
 %%%----------------------------------

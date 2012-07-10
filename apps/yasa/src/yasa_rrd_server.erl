@@ -2,7 +2,7 @@
 %%% @doc
 %%% @end
 %%%-------------------------------------------------------------------
--module(yasa_rra_server).
+-module(yasa_rrd_server).
 
 -behaviour(gen_server).
 

@@ -1,4 +1,4 @@
--module(yasa_rra_sup).
+-module(yasa_rrd_sup).
 -behaviour(supervisor).
 
 %% API
@@ -36,10 +36,10 @@ init([]) ->
     Shutdown = 2000,
     Type = worker,
 
-    RRA = {'yasa_rra', {'yasa_rra', start_link, []},
-                      Restart, Shutdown, Type, ['yasa_rra']},
+    RRD = {'yasa_rrd', {'yasa_rrd', start_link, []},
+                      Restart, Shutdown, Type, ['yasa_rrd']},
 
-    {ok, {SupFlags, [RRA]}}.
+    {ok, {SupFlags, [RRD]}}.
 
 %%%===================================================================
 %%% Internal functions
