@@ -1,13 +1,9 @@
 -module(yasa).
--export([start/0, set/2, incr/2, get/3, keys/0]).
+-export([set/2, incr/2, get/3, keys/0]).
 
 %%===================================================================
 %% Public API
 %%===================================================================
--spec start() -> 'ok' | {'error',_}.
-start() ->
-    application:start(cowboy),
-    application:start(yasa).
 
 %%%----------------------------------
 %%% @doc
