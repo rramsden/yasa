@@ -40,4 +40,4 @@ load_errors() ->
 %%%===================================================================
 
 dir() ->	
-    [yasa_app:priv_dir(), "/tests/"].
+    [code:priv_dir(yasa), "/tests/"].
