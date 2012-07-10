@@ -37,7 +37,7 @@ save_to_file(Path, {Type, Retentions, RQS}) ->
 
 -spec get_keys() -> list().
 get_keys() ->
-	Root = [yasa_app:priv_dir(), "storage/*"],
+	Root = [code:priv_dir(yasa), "storage/*"],
     [walk_directory_tree(Root)].
 
 %%%===================================================================

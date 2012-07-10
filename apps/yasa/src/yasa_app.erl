@@ -3,7 +3,7 @@
 -behaviour(application).
 
 %% Application callbacks
--export([start/2, stop/1, priv_dir/0]).
+-export([start/2, stop/1]).
 
 %% ===================================================================
 %% Application callbacks
@@ -19,21 +19,6 @@ start(_StartType, _StartArgs) ->
 -spec stop(_) -> 'ok'.
 stop(_State) ->
     ok.
-
-%%%----------------------------------
-%%% @doc
-%%% returns the priv dir for yasa application
-%%% @end
-%%%----------------------------------
--spec priv_dir() -> nonempty_string().
-priv_dir() ->
-    case code:priv_dir(yasa) of
-        {error, bad_name} ->
-            {ok, Cwd} = file:get_cwd(),
-            Cwd ++ "/" ++ "priv/";
-        Priv ->
-            Priv ++ "/"
-    end.
 
 %%%===================================================================
 %%% Internal functions

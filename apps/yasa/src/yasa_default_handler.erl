@@ -16,12 +16,12 @@ handle(Req, State) ->
     handle_path(Path, Req, State).
 
 handle_path([<<"ws">>], Req, State) ->
-	Path = [yasa_app:priv_dir(), "/www/dashboardws.html"],
+	Path = [code:priv_dir(yasa), "/www/dashboardws.html"],
 	{ok, Reply} = file:read_file(Path),
 	{ok, Req2} = cowboy_http_req:reply(200, ?DEFAULT_HEADER, Reply, Req),
     {ok, Req2, State};
 handle_path([], Req, State) ->
-	Path = [yasa_app:priv_dir(), "/www/dashboard.html"],
+	Path = [code:priv_dir(yasa), "/www/dashboard.html"],
 	{ok, Reply} = file:read_file(Path),
 	{ok, Req2} = cowboy_http_req:reply(200, ?DEFAULT_HEADER, Reply, Req),
     {ok, Req2, State}.
