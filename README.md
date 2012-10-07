@@ -1,51 +1,48 @@
-Yasa
+YASA
 ====
 
-Yasa is a high performance stat aggregation daemon which collects numeric time-series data based on given keys.
-Data is then aggregated and periodically dumped to individual Round Robin Databases depending on its key.
-Since Yasa is able to load recently touched RRD archives into state its able to significantly reduce its I/O footprint
-and quickly service requests without reading/writing to disk.
-Each RRD can be queried via Yasa's WebSocket or HTTP API allowing clients to steam/update data.
+YASA is a high performance stat aggregation daemon which collects numeric
+time-series data based on given keys.  Data is then aggregated and periodically
+dumped to individual Round Robin Databases. Since Yasa is able to load recently
+touched RRD archives into state its able to significantly reduce its I/O
+footprint and quickly service real-time data without constantly reading/writing to disk.
 
-Currently Yasa only supports two data types for logging data. Gauges and Counters. Gauges are used for
-storing things like temperature, memory, eg. a value at a specific point in time. Counters are used for
-storing rates ie. bandwidth, requests/second, etc. Below there are some API examples showing how to use
-Gauges and Counters with Yasa.
+Notes
+=====
 
+We submitted YASA for this years Spawnfest competition and it generated
+a lot of interest. However, it was insanely buggy having been written in 48-hours
+so right now I'm working out the kinks and aiming for a release in November.
+Stay tuned!
 
-QUICK START
------------
+Supported Metrics
+=================
 
-Have a recent version of erlang installed on your system,
-	
-	git clone https://github.com/aliyakamercan/Yasa.git; make; ./start.sh
-
-To access the Dashboard navigate to http://localhost:8080/
-
-API Examples
-============
-
-HTTP API
+Counters
 --------
 
-To set a gauge:
+Counter metrics provide increment and decrement capabilities for a single scalar value.
 
-	/api/set?key=key.name&value=<integer_value>
+    /api/v1/counter?key=key.name&value=<value>
+    /api/v1/counter?key=key.name&values=[[<timestamp>, <value>], ...]
 
-To increment a counter:
+Gauges
+------
 
-	/api/incr?key=key.name&value=<integer_value>
+Gauges are point-in-time single value metrics.
 
-Get time series data for a given key:
+    /api/v1/gauge?key=key.name&value=<value>
+    /api/v1/gauge?key=key.name&values=[[<timestamp>, <value>], ...]
 
-	/api/get?key=key.name&range=-<integer_value><hour|min|sec|day|month|year>
+Retrieving Data
+---------------
 
+    /api/get?key=key.name&range=-<integer_value><hour|min|sec|day|month|year>
 
 WebSocket API
--------------
+=============
 
 You can connect to Yasa via a Websocket by opening up `/wsapi`
-
 The Websocket API allows you to register and listen for multiple keys.
 
 	{method: "register", key: "keyname", range: "-<integer_value><hour|min|sec|day|month|year>"}
@@ -74,11 +71,4 @@ many retentions as you like. For example, in your app.config:
       {port, 8080}
 			{retentions, [{1,60},{60,1000}]}
 		]}
-	].
-
-Final Notes
-===========
-
-This project is far from finished. There's still plenty of bugs to fix and tests to write
-if you a take a peek at our code. Were open to any suggestions you many have about future
-work on this project. Maybe its a lost cause, maybe its not :) Please let us know!
+    ].
