@@ -19,8 +19,6 @@
          code_change/3]).
 
 -record(state, {
-    last_timestamp,
-    samples = [],
     type,
     rrd
 }).
@@ -44,21 +42,10 @@ init([Type, Key]) ->
             {ok, #state{rrd = yasa_rrd:new(Type, Key), type = Type}}
     end.
 
-handle_call({_, T2, Value}, _From, #state{last_timestamp = undefined} = State0) ->
-    {reply, ok, State0#state{last_timestamp=T2, samples = [{T2, Value} | State0#state.samples]}};
-
-handle_call({Type, T2, Value}, _From, #state{rrd = RRD0, last_timestamp = T1} = State0) ->
+handle_call({Type, Points}, _From, #state{rrd = RRD0} = State0) ->
     Module = module_for(Type),
-
-    State1 = case (T2 - T1) >= yasa_rrd:step_size(RRD0) of
-        true ->
-            RRD1 = Module:step(RRD0, State0#state.samples),
-            io:format("~p~n", [RRD1]),
-            State0#state{rrd = RRD1, samples = [{T2, Value}], last_timestamp = T2};
-        false ->
-            Samples = State0#state.samples,
-            State0#state{samples = [{T2, Value} | Samples]}
-    end,
+    RRD1 = Module:insert(Points, RRD0),
+    State1 = State0#state{rrd = RRD1},
     {reply, ok, State1}.
 
 handle_cast(_Msg, State) ->
@@ -77,5 +64,5 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
-module_for(gauge) -> yasa_rrd_gauge;
-module_for(counter) -> yasa_rrd_counter.
+module_for(gauge) -> yasa_metrics_gauge;
+module_for(counter) -> yasa_metrics_counter.

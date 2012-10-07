@@ -1,17 +1,17 @@
 -module(yasa).
--export([set/3, incr/3, get/3]).
+-export([counter/2, gauge/2, get/3]).
 
 %%===================================================================
 %% Public API
 %%===================================================================
 
-set(Key, Timestamp, Value) ->
+counter(Key, Points) ->
     {ok, Pid} = find_or_create(gauge, Key),
-    gen_server:call(Pid, {gauge, Timestamp, Value}).
+    gen_server:call(Pid, {gauge, Points}).
 
-incr(Key, Timestamp, Counter) ->
+gauge(Key, Points) ->
     {ok, Pid} = find_or_create(counter, Key),
-    gen_server:call(Pid, {counter, Timestamp, Counter}).
+    gen_server:call(Pid, {counter, Points}).
 
 get(Key, Start, End) ->
     {ok, Pid} = case find(Key) of

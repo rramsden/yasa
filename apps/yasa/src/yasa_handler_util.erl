@@ -19,13 +19,13 @@ reply(Key, <<"get">>, Proplist) ->
     [Start, End] = handle_range(pval(<<"range">>, Proplist)),
     Values = yasa:get(Key, Start, End),
     {200, lists:map(fun({T, V}) -> [T,V] end, Values)};
-reply(Key, <<"set">>, Proplist) ->
+reply(Key, <<"counter">>, Proplist) ->
     Value = pval(<<"value">>, Proplist),
-    ok = yasa:set(Key, to_int(Value)),
+    ok = yasa:counter(Key, bin_to_num(Value)),
     {200, <<"">>};
-reply(Key, <<"incr">>, Proplist) ->
+reply(Key, <<"gauge">>, Proplist) ->
     Value = pval(<<"value">>, Proplist),
-    ok = yasa:incr(Key, to_int(Value)),
+    ok = yasa:gauge(Key, bin_to_num(Value)),
     {200, <<"">>};
 reply(undefined, <<"keys">>, _) ->
     {200, yasa:keys()};
@@ -37,7 +37,7 @@ pval(X, Req) when element(1, Req) == http_req ->
     Val;
 pval(X, PL) ->
     proplists:get_value(X, PL).
-    
+
 % ============================================================================
 % Internal Functions
 % ============================================================================ 
@@ -59,8 +59,14 @@ seconds_in(N, hour)   -> N * 60 * 60;
 seconds_in(N, min)    -> N * 60;
 seconds_in(N, sec)    -> N.
 
-to_int(Bin) when is_binary(Bin) ->
-    list_to_integer(binary_to_list(Bin)).
+bin_to_num(Bin) ->
+    N = binary_to_list(Bin),
+    case string:to_float(N) of
+        {error,no_float} ->
+            list_to_integer(N);
+        {F,_Rest} ->
+            F
+    end.
 
 timestamp() ->
     {Mega, Secs, _} = now(),
