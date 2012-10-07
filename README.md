@@ -35,9 +35,9 @@ Gauges are point-in-time single value metrics.
     /api/v1/gauge?key=key.name&values=[[<timestamp>, <value>], ...]
 
 Retrieving Data
----------------
+===============
 
-    /api/get?key=key.name&range=-<integer_value><hour|min|sec|day|month|year>
+    /api/v1/get?key=key.name&range=-<integer_value><hour|min|sec|day|month|year>
 
 WebSocket API
 =============
