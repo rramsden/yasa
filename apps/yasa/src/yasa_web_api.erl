@@ -1,4 +1,4 @@
--module(yasa_handler_util).
+-module(yasa_web_api).
 
 -export([handle_range/1, reply/3, pval/2]).
 
