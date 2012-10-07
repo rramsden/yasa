@@ -39,7 +39,7 @@ jsonp(Callback, Reply) ->
     [Callback, <<"(">>, Reply, <<");">>].
 
 to_json(<<"error:invalid request">>) ->
-    <<"error:invalid request">>;
+    <<"[{error: \"invalid request\"}];">>;
 to_json(<<"">>)->
     <<"[]">>;
 to_json(Term) ->
