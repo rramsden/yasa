@@ -19,6 +19,7 @@
          code_change/3]).
 
 -record(state, {
+    key,
     type,
     rrd
 }).
@@ -36,10 +37,13 @@ start_link(Type, Key) ->
 
 init([Type, Key]) ->
     case yasa_rrd:load(Key) of
-        {ok, RRD} ->
+        {ok, {Type, RRD}} ->
             {ok, #state{rrd = RRD, type = Type}};
+        {ok, _} ->
+            {stop, type_mismatch};
         {error, not_found} ->
-            {ok, #state{rrd = yasa_rrd:new(Type, Key), type = Type}}
+            Retentions = retentions_for_key(Key),
+            {ok, #state{rrd = yasa_rrd:new(Retentions), type = Type}}
     end.
 
 handle_call({Type, Points}, _From, #state{rrd = RRD0} = State0) ->
@@ -63,6 +67,10 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+
+retentions_for_key(_Key) ->
+    {ok, Retentions} = application:get_env(yasa, retentions),
+    Retentions.
 
 module_for(gauge) -> yasa_metrics_gauge;
 module_for(counter) -> yasa_metrics_counter.
