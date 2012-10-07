@@ -1,4 +1,5 @@
 *.yasa
+apps/yasa/ebin
 erl_crash.dump
 *.beam
 .eunit
