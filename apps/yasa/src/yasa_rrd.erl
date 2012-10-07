@@ -7,7 +7,9 @@
     points/1,
     table/2,
     step_size/1,
-    retentions/1
+    retentions/1,
+    load/1,
+    save/2
 ]).
 
 -record(rrd, {
@@ -28,17 +30,17 @@
 -define(SECONDS_FROM_GREGORIAN_BASE_TO_EPOCH,
          (?DAYS_FROM_GREGORIAN_BASE_TO_EPOCH * 24*60*60)).
 
-new(Args) ->
-    new(Args, []).
+new(Retentions) ->
+    new(Retentions, []).
 
-new(Args, Opts) ->
+new(Retentions, Opts) ->
     Xff = ?pval(xff, Opts, 0.5),
     Consolidation = ?pval(consolidation, Opts, average),
-    Divisible = divisibility_check(Args),
+    Divisible = divisibility_check(Retentions),
 
     case Divisible of
         true ->
-            Archives = lists:map(fun({Step, Size}) -> #archive{step=Step, size=Size} end, Args),
+            Archives = lists:map(fun({Step, Size}) -> #archive{step=Step, size=Size} end, Retentions),
             #rrd{archives=Archives, consolidation=Consolidation, xff=Xff};
         false ->
             {error, not_divisible}
@@ -57,6 +59,20 @@ step_size(Table) ->
 table(N, Q) ->
     X = lists:nth(N, Q#rrd.archives),
     X#archive.points.
+
+load(Key) when is_list(Key) ->
+    load(list_to_binary(Key));
+load(Key) ->
+    Path = path_from_key(Key),
+    case file:read_file(Path) of
+        {ok, Binary} ->  {ok, binary_to_term(Binary)};
+        {error, _} ->  {error, not_found}
+    end.
+
+save(Key, {Type, RRD}) ->
+    Path = path_from_key(Key),
+    filelib:ensure_dir(Path),
+    file:write_file(Path, term_to_binary({Type, RRD})).
 
 %% @doc
 %% Neighbour values are the points we need to aggregate
@@ -120,9 +136,6 @@ now_secs() ->
     {Mega, Sec, _} = os:timestamp(),
     ?SECONDS_FROM_GREGORIAN_BASE_TO_EPOCH + Mega * 1000000 + Sec.
 
-%%%
-%% @private step sizes must be divisible
-
 divisibility_check([{_, _}]) -> true;
 divisibility_check([]) -> true;
 divisibility_check([{Step1, _}, {Step2, _} = H2 | T]) ->
@@ -130,3 +143,9 @@ divisibility_check([{Step1, _}, {Step2, _} = H2 | T]) ->
         true -> divisibility_check([H2 | T]);
         false -> false
     end.
+
+path_from_key(Key) ->
+    SlashedKey = binary:replace(Key, <<".">>, <<"/">>, [global]),
+    PrivDir = code:priv_dir(yasa),
+    [PrivDir, "/storage/", binary_to_list(SlashedKey), ".yasa"].
+
