@@ -21,11 +21,11 @@ reply(Key, <<"fetch">>, Proplist) ->
     {200, lists:map(fun({T, V}) -> [T,V] end, Values)};
 reply(Key, <<"counter">>, Proplist) ->
     Value = pval(<<"value">>, Proplist),
-    ok = yasa:counter(Key, bin_to_num(Value)),
+    ok = yasa:counter(Key, [{timestamp(), bin_to_num(Value)}]),
     {200, <<"">>};
 reply(Key, <<"gauge">>, Proplist) ->
     Value = pval(<<"value">>, Proplist),
-    ok = yasa:gauge(Key, bin_to_num(Value)),
+    ok = yasa:gauge(Key, [{timestamp(), bin_to_num(Value)}]),
     {200, <<"">>};
 reply(undefined, <<"keys">>, _) ->
     {200, yasa:keys()};
