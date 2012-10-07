@@ -15,7 +15,7 @@ handle_range(String) when is_binary(String) ->
     Reply = to_range(Size, Period),
     Reply.
 
-reply(Key, <<"get">>, Proplist) ->
+reply(Key, <<"fetch">>, Proplist) ->
     [Start, End] = handle_range(pval(<<"range">>, Proplist)),
     Values = yasa:get(Key, Start, End),
     {200, lists:map(fun({T, V}) -> [T,V] end, Values)};
