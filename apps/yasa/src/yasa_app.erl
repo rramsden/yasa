@@ -11,9 +11,9 @@
 
 -spec start(_,_) ->  {'error',_} | {'ok',pid()}.
 start(_StartType, _StartArgs) ->
-	ok = start_web_server(),
+	%ok = start_web_server(),
 	% don't start with out properly defined retentions
-	ok = check_retentions(),
+	%ok = check_retentions(),
     yasa_sup:start_link().
 
 -spec stop(_) -> 'ok'.
@@ -55,17 +55,17 @@ start_web_server() ->
 
 %% @private check if the retentions are define in config file and make
 %% sure the are not relatively primary
-check_retentions() ->
-    case application:get_env(yasa, retentions) of 
-        undefined -> throw("Please define retentions");
-        {ok, Rets} ->  check_retention_divisibility(Rets)
-    end.
-
-check_retention_divisibility([{FirstStep, _} | Tail]) ->
-	Fun = fun({StepSize, _}) ->
-		case StepSize rem FirstStep of
-			0 -> ok;
-			_ -> throw("Retentions are relatively primary")
-		end
-	end,
-	lists:foreach(Fun, Tail). 
+%check_retentions() ->
+%    case application:get_env(yasa, retentions) of 
+%        undefined -> throw("Please define retentions");
+%        {ok, Rets} ->  check_retention_divisibility(Rets)
+%    end.
+%
+%check_retention_divisibility([{FirstStep, _} | Tail]) ->
+%	Fun = fun({StepSize, _}) ->
+%		case StepSize rem FirstStep of
+%			0 -> ok;
+%			_ -> throw("Retentions are relatively primary")
+%		end
+%	end,
+%	lists:foreach(Fun, Tail). 

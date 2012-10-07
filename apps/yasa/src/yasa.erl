@@ -1,68 +1,48 @@
 -module(yasa).
--export([set/2, incr/2, get/3, keys/0]).
+-export([set/3, incr/3, get/3]).
 
 %%===================================================================
 %% Public API
 %%===================================================================
 
-%%%----------------------------------
-%%% @doc
-%%% Sets the value of the gauge with the given key by value
-%%% @end
-%%%----------------------------------
--spec set(binary(), integer()) -> ok.
-set(Key, Value) ->
-    send(set, Key, Value).
+set(Key, Timestamp, Value) ->
+    {ok, Pid} = find_or_create(gauge, Key),
+    gen_server:call(Pid, {gauge, Timestamp, Value}).
 
-%%%----------------------------------
-%%% @doc
-%%% Increments the value of the counter with the given key by incr
-%%% @end
-%%%----------------------------------
--spec incr(binary(), integer()) -> ok.
-incr(Key, Incr) ->
-    send(incr, Key, Incr).
+incr(Key, Timestamp, Counter) ->
+    {ok, Pid} = find_or_create(counter, Key),
+    gen_server:call(Pid, {counter, Timestamp, Counter}).
 
-%%%----------------------------------
-%%% @doc
-%%% Returns the values for the given key between 
-%%% Start and End timestamps
-%%% @end
-%%%----------------------------------
--spec get(binary(), integer(), integer()) -> list().
 get(Key, Start, End) ->
-    send(get, Key, Start, End).
-
-%%%----------------------------------
-%%% @doc
-%%% Returns all keys being stored by YASA
-%%% eg. [<<"stat.keyname">>, ...]
-%%% @end
-%%%----------------------------------
--spec keys() -> list().
-keys() ->
-    yasa_rra_file:get_keys().
+    {ok, Pid} = case find(Key) of
+        {error, not_found} ->
+            {error, not_found};
+        Ref ->
+            Ref
+    end,
+    gen_server:call(Pid, {get, Start, End}).
 
 %%===================================================================
 %% Internal
 %%===================================================================
-send(Type, Key, Value) ->
-    {ok, Pid} = lookup(Key, Type),
-    gen_server:call(Pid, {Type, Value}).
 
-send(Type, Key, Start, End) ->
-    {ok, Pid} = lookup(Key, Type),
-    gen_server:call(Pid, {Type, Start, End}).
+find_or_create(Type, Key) ->
+    case find(Key) of
+        {ok, Ref} ->
+            {ok, Ref};
+        {error, not_found} ->
+            create(Type, Key)
+    end.
 
-lookup(Key, Type) ->
+find(Key) ->
     case yasa_pid_store:lookup(Key) of
         {ok, Pid} ->
             {ok, Pid};
         {error, not_found} ->
-            create(Key, Type)
+            {error, not_found}
     end.
 
-create(Key, Type) ->
-    {ok, Pid} = Reply = yasa_rra_sup:start_child(Key, Type),
+create(Type, Key) ->
+    {ok, Pid} = Reply = yasa_rrd_sup:start_child(Type, Key),
     yasa_pid_store:insert(Key, Pid),
     Reply.

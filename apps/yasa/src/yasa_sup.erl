@@ -23,7 +23,7 @@ start_link() ->
 init([]) ->
     RestartStrategy = {one_for_one, 5, 10},
     Children = [
-        ?CHILD(yasa_rra_sup, supervisor),
+        ?CHILD(yasa_rrd_sup, supervisor),
         ?CHILD(yasa_pid_store, worker),
         ?CHILD(yasa_vm_stats, worker)
     ],

@@ -17,8 +17,8 @@
 start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
-start_child(Key, Type) ->
-    supervisor:start_child(?MODULE, [Key, Type]).
+start_child(Type, Key) ->
+    supervisor:start_child(?MODULE, [Type, Key]).
 
 %%%===================================================================
 %%% Supervisor callbacks
@@ -36,8 +36,8 @@ init([]) ->
     Shutdown = 2000,
     Type = worker,
 
-    RRD = {'yasa_rrd', {'yasa_rrd', start_link, []},
-                      Restart, Shutdown, Type, ['yasa_rrd']},
+    RRD = {'yasa_rrd_server', {'yasa_rrd_server', start_link, []},
+                      Restart, Shutdown, Type, ['yasa_rrd_server']},
 
     {ok, {SupFlags, [RRD]}}.
 
