@@ -27,7 +27,7 @@ reply(Key, <<"gauge">>, Proplist) ->
     Value = pval(<<"value">>, Proplist),
     ok = yasa:gauge(Key, [{timestamp(), bin_to_num(Value)}]),
     {200, <<"">>};
-reply(undefined, <<"keys">>, _) ->
+reply(undefined, <<"keys.json">>, _) ->
     {200, yasa:keys()};
 reply(_, _, _) ->
     {500, <<"error:invalid request">>}.
