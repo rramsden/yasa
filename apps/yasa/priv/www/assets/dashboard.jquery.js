@@ -1,4 +1,6 @@
 (function($) {
+    var API_ENDPOINT = '/api/v1'
+
     $.dashboard = {
         timer : null,
         data : null,
@@ -9,11 +11,13 @@
                 async: false
             });
 
-            $.getJSON("/api/keys", function(data) {
-                $('#tree').jqxTree({ source: data, height: '600px', width: '300px' })
+            $.getJSON( API_ENDPOINT + "/keys.json", function(keys) {
+                $(keys).each(function(i, key) {
+                    $('ul#keys').append("<li>" + key + "</li>");
+                })
             });
 
-            $('#tree .keyname').click(function() {
+            $('ul#keys li').click(function() {
                 $('#timeframe').show();
                 $.dashboard.graph( $(this).data('name') );
             });
@@ -42,7 +46,7 @@
             $.dashboard.key = key;
             $.dashboard.range = range;
 
-            $.getJSON("/api/get?range="+range+"&key="+key, function(data) {
+            $.getJSON(API_ENDPOINT + "/fetch.json?range="+range+"&key="+key, function(data) {
                 data = $.map(data, function(arr) { return [[arr[0] * 1000, arr[1]]] });
                 options.series = [{name: key, data: data}];
                 $.dashboard.chart = new Highcharts.Chart(options);
