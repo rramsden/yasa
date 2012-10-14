@@ -15,10 +15,6 @@ handle_range(String) when is_binary(String) ->
     Reply = to_range(Size, Period),
     Reply.
 
-reply(Key, <<"fetch">>, Proplist) ->
-    [Start, End] = handle_range(pval(<<"range">>, Proplist)),
-    Values = yasa:get(Key, Start, End),
-    {200, lists:map(fun({T, V}) -> [T,V] end, Values)};
 reply(Key, <<"counter">>, Proplist) ->
     Value = pval(<<"value">>, Proplist),
     ok = yasa:counter(Key, [{timestamp(), bin_to_num(Value)}]),
@@ -27,6 +23,10 @@ reply(Key, <<"gauge">>, Proplist) ->
     Value = pval(<<"value">>, Proplist),
     ok = yasa:gauge(Key, [{timestamp(), bin_to_num(Value)}]),
     {200, <<"">>};
+reply(Key, <<"fetch.json">>, Proplist) ->
+    [Start, End] = handle_range(pval(<<"range">>, Proplist)),
+    Values = yasa:fetch(Key, Start, End),
+    {200, lists:map(fun({T, V}) -> [T,V] end, Values)};
 reply(undefined, <<"keys.json">>, _) ->
     {200, yasa:keys()};
 reply(_, _, _) ->
