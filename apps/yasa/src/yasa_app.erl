@@ -21,7 +21,7 @@ stop(_State) ->
 %%%===================================================================
 
 start_web_server() ->
-    Port = case application:get_env(yasa, port) of 
+    Port = case application:get_env(yasa, port) of
         {ok, P} -> P;
         undefined -> 8080
     end,

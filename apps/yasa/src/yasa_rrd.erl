@@ -7,9 +7,7 @@
     points/1,
     table/2,
     step_size/1,
-    retentions/1,
-    load/1,
-    save/2
+    retentions/1
 ]).
 
 -record(rrd, {
@@ -26,9 +24,6 @@
 
 -define(pval(K, List, Default), proplists:get_value(K, List, Default)).
 -define(pval(K, List), proplists:get_value(K, List)).
--define(DAYS_FROM_GREGORIAN_BASE_TO_EPOCH, (1970*365+478)).
--define(SECONDS_FROM_GREGORIAN_BASE_TO_EPOCH,
-         (?DAYS_FROM_GREGORIAN_BASE_TO_EPOCH * 24*60*60)).
 
 new(Retentions) ->
     new(Retentions, []).
@@ -59,20 +54,6 @@ step_size(Table) ->
 table(N, Q) ->
     X = lists:nth(N, Q#rrd.archives),
     X#archive.points.
-
-load(Key) when is_list(Key) ->
-    load(list_to_binary(Key));
-load(Key) ->
-    Path = path_from_key(Key),
-    case file:read_file(Path) of
-        {ok, Binary} ->  {ok, binary_to_term(Binary)};
-        {error, _} ->  {error, not_found}
-    end.
-
-save(Key, {Type, RRD}) ->
-    Path = path_from_key(Key),
-    filelib:ensure_dir(Path),
-    file:write_file(Path, term_to_binary({Type, RRD})).
 
 %% @doc
 %% Neighbour values are the points we need to aggregate
@@ -132,10 +113,6 @@ consolidate(max, Points) ->
     Max = lists:max(Values),
     {hd(Times), Max}.
 
-now_secs() ->
-    {Mega, Sec, _} = os:timestamp(),
-    ?SECONDS_FROM_GREGORIAN_BASE_TO_EPOCH + Mega * 1000000 + Sec.
-
 divisibility_check([{_, _}]) -> true;
 divisibility_check([]) -> true;
 divisibility_check([{Step1, _}, {Step2, _} = H2 | T]) ->
@@ -143,9 +120,3 @@ divisibility_check([{Step1, _}, {Step2, _} = H2 | T]) ->
         true -> divisibility_check([H2 | T]);
         false -> false
     end.
-
-path_from_key(Key) ->
-    SlashedKey = binary:replace(Key, <<".">>, <<"/">>, [global]),
-    PrivDir = code:priv_dir(yasa),
-    [PrivDir, "/storage/", binary_to_list(SlashedKey), ".yasa"].
-

@@ -36,21 +36,6 @@ consolidation_test() ->
     ?assertEqual([{120, 1.5}], yasa_rrd:table(2, C2)),
     ?assertEqual([{120, 1.5}], yasa_rrd:table(3, C2)).
 
-overwrite_time_distance_greater_than_archive_test() ->
-    XFactor = 0.5,
-    Q0 = yasa_rrd:new([{1,2}, {2,2}, {4,2}], [{xff, XFactor}]),
-    Q1 = yasa_rrd:add({?EPOCH, 1.0}, Q0),
-
-    ?assertEqual([{120, 1.0}], yasa_rrd:table(1, Q1)),
-    ?assertEqual([{120, 1.0}], yasa_rrd:table(2, Q1)),
-    ?assertEqual([{120, 1.0}], yasa_rrd:table(3, Q1)),
-
-    Q2 = yasa_rrd:add({?EPOCH + 9, 1.0}, Q1),
-
-    ?assertEqual([{129, 1.0}], yasa_rrd:table(1, Q2)),
-    ?assertEqual([{129, 1.0}], yasa_rrd:table(2, Q2)),
-    ?assertEqual([{129, 1.0}], yasa_rrd:table(3, Q2)).
-
 aggregation_test() ->
     XFactor = 0.5,
     Q0 = yasa_rrd:new([{1,2}, {2,2}, {4,2}], [{xff, XFactor}]),

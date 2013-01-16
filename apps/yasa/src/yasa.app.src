@@ -10,7 +10,6 @@
                  ]},
   {mod, { yasa_app, []}},
   {env, [
-    {port, 8080},
     {retentions,
         {default, [{1,60}, {60,1000}]}
     }]}

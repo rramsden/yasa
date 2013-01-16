@@ -2,7 +2,7 @@
 -behaviour(supervisor).
 
 %% API
--export([start_link/0, start_child/2]).
+-export([start_link/0, start_child/1]).
 
 %% Supervisor callbacks
 -export([init/1]).
@@ -17,8 +17,10 @@
 start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
-start_child(Type, Key) ->
-    supervisor:start_child(?MODULE, [Type, Key]).
+start_child(Key) ->
+    {ok, Pid} = Reply = supervisor:start_child(?MODULE, [Key]),
+    yasa_pid_store:insert(Key, Pid),
+    Reply.
 
 %%%===================================================================
 %%% Supervisor callbacks
@@ -27,7 +29,7 @@ start_child(Type, Key) ->
 init([]) ->
     RestartStrategy = simple_one_for_one,
     MaxRestarts = 3,
-    MaxSecondsBetweenRestarts = 10, 
+    MaxSecondsBetweenRestarts = 10,
 
     SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
 
